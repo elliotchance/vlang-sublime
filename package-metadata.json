@@ -1,0 +1,10 @@
+{
+  "platforms": [
+    "*"
+  ],
+  "description": "A Sublime text 3 basic syntax highlighter for Vlang development.",
+  "dependencies": [],
+  "sublime_text": "*",
+  "url": "https://github.com/oversoul/vlang-sublime",
+  "version": "0.1"
+}
