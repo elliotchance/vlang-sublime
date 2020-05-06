@@ -16,7 +16,7 @@
 		</dict>
 		<dict>
 			<key>include</key>
-			<string>#as</string>
+			<string>#as-is</string>
 		</dict>
 		<dict>
 			<key>include</key>
@@ -129,16 +129,16 @@
 	</array>
 	<key>repository</key>
 	<dict>
-		<key>as</key>
+		<key>as-is</key>
 		<dict>
 			<key>begin</key>
-			<string>\s+(as)\s+</string>
+			<string>\s+(as|is)\s+</string>
 			<key>beginCaptures</key>
 			<dict>
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.as.v</string>
+					<string>keyword.$1.v</string>
 				</dict>
 			</dict>
 			<key>end</key>
@@ -322,7 +322,7 @@
 						</dict>
 						<dict>
 							<key>match</key>
-							<string>\b(in|or|break|continue|default|unsafe|match|if|else|for|go|goto|defer|return)\b(?=\s*\()</string>
+							<string>\b(in|is|or|break|continue|default|unsafe|match|if|else|for|go|goto|defer|return)\b(?=\s*\()</string>
 							<key>name</key>
 							<string>keyword.control.v</string>
 						</dict>
@@ -459,7 +459,7 @@
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>((?:@)(?:mut|pub|fn|unsafe|module|import|as|const|map|assert|sizeof|type|struct|interface|enum|in|or|match|if|else|for|go|goto|defer|return|i?(?:8|16|nt|64|128)|u?(?:16|32|64|128)|f?(?:32|64)|bool|byte|byteptr|charptr|voidptr|string|ustring|rune|none))</string>
+			<string>((?:@)(?:mut|var|pub|fn|unsafe|module|import|as|const|map|assert|sizeof|type|struct|interface|enum|in|is|or|match|if|else|for|go|goto|defer|return|i?(?:8|16|nt|64|128)|u?(?:16|32|64|128)|f?(?:32|64)|bool|byte|byteptr|charptr|voidptr|string|ustring|rune|none))</string>
 			<key>name</key>
 			<string>meta.escaped.keyword.v</string>
 		</dict>
@@ -527,13 +527,6 @@
 					<string>meta.definition.generic.v</string>
 				</dict>
 			</array>
-		</dict>
-		<key>illegal-name</key>
-		<dict>
-			<key>match</key>
-			<string>\d\w+</string>
-			<key>name</key>
-			<string>invalid.illegal.v</string>
 		</dict>
 		<key>import-decl</key>
 		<dict>
@@ -617,7 +610,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(in|or|break|continue|default|unsafe|match|if|else|for|go|goto|defer|return)\b</string>
+					<string>\b(in|is|or|break|continue|default|unsafe|match|if|else|for|go|goto|defer|return)\b</string>
 					<key>name</key>
 					<string>keyword.control.v</string>
 				</dict>
@@ -768,7 +761,7 @@
 		<key>storage</key>
 		<dict>
 			<key>match</key>
-			<string>\b(const|mut|pub)\b</string>
+			<string>\b(const|mut|var|pub)\b</string>
 			<key>name</key>
 			<string>storage.modifier.v</string>
 		</dict>
@@ -926,7 +919,7 @@
 			<array>
 				<dict>
 					<key>begin</key>
-					<string>^\s*(?:(mut|pub(?:\s+mut)?|__global)\s+)?(struct)\s+([\w.]+)\s*({)</string>
+					<string>^\s*(?:(mut|var|pub(?:\s+mut|var)?|__global)\s+)?(struct)\s+([\w.]+)\s*({)</string>
 					<key>beginCaptures</key>
 					<dict>
 						<key>1</key>
@@ -1015,7 +1008,7 @@
 						</dict>
 					</dict>
 					<key>match</key>
-					<string>^\s*(?:(mut|pub(?:\s+mut)?|__global)\s+)?(struct)(?:\s+([\w.]+))?</string>
+					<string>^\s*(?:(mut|var|pub(?:\s+mut|var)?|__global)\s+)?(struct)(?:\s+([\w.]+))?</string>
 					<key>name</key>
 					<string>meta.definition.struct.v</string>
 				</dict>
@@ -1037,7 +1030,7 @@
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>(?&lt;=\s|^)(mut|pub(?:\s+mut)?|__global)(:|\b)</string>
+			<string>(?&lt;=\s|^)(mut|var|pub(?:\s+mut|var)?|__global)(:|\b)</string>
 		</dict>
 		<key>type</key>
 		<dict>
