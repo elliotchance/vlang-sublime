@@ -5,6 +5,7 @@
 	<key>fileTypes</key>
 	<array>
 		<string>v</string>
+		<string>vsh</string>
 	</array>
 	<key>name</key>
 	<string>vlang</string>
