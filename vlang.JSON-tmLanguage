@@ -157,7 +157,7 @@
 
 		"assignment": {
 			"name": "meta.definition.variable.v",
-			"match": "([\\w.]+)\\s*((?:\\:|\\+|\\-|\\*|\\/|\\%|\\&|\\||\\^)?=)\\s*(?=.+)",
+			"match": "([\\w.]+)\\s*((?:\\:\\=|\\+\\=|\\-\\=|\\*\\=|\\/\\=|\\%\\=|\\&\\=|\\|\\=|\\^\\=))\\s*(?=.+)",
 			"captures": {
 				"1": {
 					"name": "variable.assignment.other.v"
@@ -633,6 +633,10 @@
 		"operators": {
 			"patterns": [
 				{
+					"name": "keyword.operator.relation.v",
+					"match": "(\\=\\=|\\!\\=|\\>|\\<|\\>\\=|\\<\\=)"
+				},
+				{
 					"name": "keyword.operator.arithmethic.v",
 					"match": "(\\+|\\-|\\*|\\/|\\%|\\+\\+|\\-\\-)"
 				},
@@ -647,10 +651,6 @@
 				{
 					"name": "keyword.operator.logical.v",
 					"match": "(\\&\\&|\\|\\||\\!)"
-				},
-				{
-					"name": "keyword.operator.relation.v",
-					"match": "(\\=\\=|\\!\\=|\\>|\\<|\\>\\=|\\<\\=)"
 				}
 			]
 		},

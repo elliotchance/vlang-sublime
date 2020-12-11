@@ -5,7 +5,6 @@
 	<key>fileTypes</key>
 	<array>
 		<string>v</string>
-		<string>vsh</string>
 	</array>
 	<key>name</key>
 	<string>vlang</string>
@@ -164,7 +163,7 @@
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>([\w.]+)\s*((?:\:|\+|\-|\*|\/|\%|\&amp;|\||\^)?=)\s*(?=.+)</string>
+			<string>([\w.]+)\s*((?:\:\=|\+\=|\-\=|\*\=|\/\=|\%\=|\&amp;\=|\|\=|\^\=))\s*(?=.+)</string>
 			<key>name</key>
 			<string>meta.definition.variable.v</string>
 		</dict>
@@ -693,6 +692,12 @@
 			<array>
 				<dict>
 					<key>match</key>
+					<string>(\=\=|\!\=|\&gt;|\&lt;|\&gt;\=|\&lt;\=)</string>
+					<key>name</key>
+					<string>keyword.operator.relation.v</string>
+				</dict>
+				<dict>
+					<key>match</key>
 					<string>(\+|\-|\*|\/|\%|\+\+|\-\-)</string>
 					<key>name</key>
 					<string>keyword.operator.arithmethic.v</string>
@@ -714,12 +719,6 @@
 					<string>(\&amp;\&amp;|\|\||\!)</string>
 					<key>name</key>
 					<string>keyword.operator.logical.v</string>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>(\=\=|\!\=|\&gt;|\&lt;|\&gt;\=|\&lt;\=)</string>
-					<key>name</key>
-					<string>keyword.operator.relation.v</string>
 				</dict>
 			</array>
 		</dict>
