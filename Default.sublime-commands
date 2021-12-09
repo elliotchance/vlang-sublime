@@ -1,0 +1,6 @@
+[
+    {
+        "caption": "V: Run current file",
+        "command": "run_current_file",
+    }
+]
