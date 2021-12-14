@@ -1,6 +1,75 @@
 [
     {
-        "caption": "V: Run current file",
-        "command": "run_current_file",
-    }
+        "caption": "V: Build",
+        "command": "v",
+        "args": {
+            "cmd": "${file_path}",
+        }
+    },
+    {
+        "caption": "V: Build File",
+        "command": "v",
+        "args": {
+            "cmd": "${file}",
+        }
+    },
+    {
+        "caption": "V: Format File",
+        "command": "v",
+        "args": {
+            "cmd": "fmt -w ${file}",
+            "output": false,
+        }
+    },
+    {
+        "caption": "V: Format Module",
+        "command": "v",
+        "args": {
+            "cmd": "fmt -w ${file_path}",
+            "output": false,
+        }
+    },
+    {
+        "caption": "V: Format Project",
+        "command": "v",
+        "args": {
+            "cmd": "fmt -w ${folder}",
+            "output": false,
+        }
+    },
+    {
+        "caption": "V: Run File",
+        "command": "v",
+        "args": {
+            "cmd": "run ${file}",
+        }
+    },
+    {
+        "caption": "V: Run",
+        "command": "v",
+        "args": {
+            "cmd": "run ${file_path}",
+        }
+    },
+    {
+        "caption": "V: Test",
+        "command": "v",
+        "args": {
+            "cmd": "test ${file_path}",
+        }
+    },
+    {
+        "caption": "V: Test File",
+        "command": "v",
+        "args": {
+            "cmd": "test ${file}",
+        }
+    },
+    {
+        "caption": "V: Update",
+        "command": "v",
+        "args": {
+            "cmd": "up",
+        }
+    },
 ]
