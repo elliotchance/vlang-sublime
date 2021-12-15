@@ -10,8 +10,9 @@ run_output = None
 def setup_output(window):
 	global run_output
 
-	# To prevent a new tab every time, let's reuse the output window.
-	if run_output is None:
+	# To prevent a new tab every time, let's reuse the output window. The
+	# buffer_id will be zero if it was closed.
+	if run_output is None or run_output.buffer_id() == 0:
 		run_output = window.new_file()
 		run_output.set_scratch(True)
 		run_output.set_name('V')
@@ -27,9 +28,13 @@ class ShowErrors(sublime_plugin.ViewEventListener):
 		#  can be raised as well.
 		file_path = self.view.file_name()
 
+		# Only applies to v files.
+		if not file_path.endswith('.v'):
+			return
+
 		command = "v -check -nocolor -message-limit -1 \"" + file_path + "\""
 		proc = subprocess.Popen(
-			[os.environ['SHELL'], '-ic', command],
+			[os.environ['SHELL'], '-c', command],
 			shell=False,
 			stdout=subprocess.PIPE,
 			stderr=subprocess.STDOUT,
@@ -50,10 +55,9 @@ class ShowErrors(sublime_plugin.ViewEventListener):
 		warning_regions = []
 		warning_annotations = []
 		for line in full_output.split('\n'):
-			if len(line) == 0 or line[0] == ' ':
-				continue
-
 			matches = re.search(r"(\d+):(\d+): (.*)", line)
+			if matches is None:
+				continue
 
 			offset = self.view.text_point(int(matches.group(1))-1, 0) + int(matches.group(2)) - 1
 
@@ -127,7 +131,7 @@ class Runner(threading.Thread):
 
 	def run(self):
 		proc = subprocess.Popen(
-			[self.shell, '-ic', self.command],
+			[self.shell, '-c', self.command],
 			shell=False,
 			stdout=subprocess.PIPE,
 			stderr=subprocess.STDOUT,
