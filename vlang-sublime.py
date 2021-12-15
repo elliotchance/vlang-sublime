@@ -3,6 +3,7 @@ import sublime_plugin
 import os
 import threading
 import subprocess
+import re
 
 run_output = None
 
@@ -18,6 +19,71 @@ def setup_output(window):
 	window.focus_view(run_output)
 
 	return run_output
+
+class ShowErrors(sublime_plugin.ViewEventListener):
+	def on_post_save(self):
+		# TODO(elliotchance): Get the module for the file that was just changed.
+		#  If we check the whole module any new errors that arise in other files
+		#  can be raised as well.
+		file_path = self.view.file_name()
+
+		command = "v -check -nocolor -message-limit -1 \"" + file_path + "\""
+		proc = subprocess.Popen(
+			[os.environ['SHELL'], '-ic', command],
+			shell=False,
+			stdout=subprocess.PIPE,
+			stderr=subprocess.STDOUT,
+			universal_newlines=True,
+			env=os.environ.copy()
+		)
+
+		full_output = ''
+		while True:
+			out = proc.stdout.read(1)
+			if out == '' and proc.poll() != None:
+			 	break
+
+			full_output += out
+		
+		error_regions = []
+		error_annotations = []
+		warning_regions = []
+		warning_annotations = []
+		for line in full_output.split('\n'):
+			if len(line) == 0 or line[0] == ' ':
+				continue
+
+			matches = re.search(r"(\d+):(\d+): (.*)", line)
+
+			offset = self.view.text_point(int(matches.group(1))-1, 0) + int(matches.group(2)) - 1
+
+			# The error message may give us a token which we can use to
+			# determine the length. We *could* use the "~~~" that appears later
+			# in the stream, but thats a bit fidely, so I'm just going to use
+			# the token or goto the end of the line.
+			symbol = re.search(r"`(.*?)`", line)
+			if symbol is None:
+				end = self.view.text_point(int(matches.group(1)), 0)-1
+			else:
+				end = offset + len(symbol.group(1))
+			
+			region = sublime.Region(offset, end)
+
+			msg = ':'.join(line.split(':')[4:])
+			if 'warning:' in line:
+				warning_regions.append(region)
+				warning_annotations.append(msg)
+			else:
+				error_regions.append(region)
+				error_annotations.append(msg)
+
+		self.view.add_regions("v_errors", error_regions, "region.redish", "dot",
+			sublime.DRAW_NO_FILL | sublime.DRAW_NO_OUTLINE | sublime.DRAW_SQUIGGLY_UNDERLINE,
+			error_annotations)
+
+		self.view.add_regions("v_warnings", warning_regions, "region.yellowish", "dot",
+			sublime.DRAW_NO_FILL | sublime.DRAW_NO_OUTLINE | sublime.DRAW_SQUIGGLY_UNDERLINE,
+			warning_annotations, 'yellow')
 
 class VCommand(sublime_plugin.WindowCommand):
 	def run(self, cmd, output=True):
