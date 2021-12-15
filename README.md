@@ -3,58 +3,71 @@
 This bundle provides [V](https://vlang.io/) syntax highlighting for Sublime
 Text.
 
-You can install [V](https://packagecontrol.io/packages/V) with
-[Package Control](https://packagecontrol.io) by running "Package Control >
-Install Package..."
+## Installation
 
-# Command Palette
+You can install the [V](https://packagecontrol.io/packages/V) package with
+[Package Control](https://packagecontrol.io):
+
+![Package Control: Install Package](img/install-package.png)
+
+![Package Control: Install Package](img/install-v.png)
+
+## Features
+
+Commands for building, running, testing, formatting and updating V itself:
+
+![Command Palette](img/command-palette.png)
+
+Inline errors and warnings:
+
+![Command Palette](img/inline-errors.png)
+
+## Command Palette
 
 Any commands that generate output will show in a new window called "V". You may
 leave this tab open an any future runs will be appended.
 
-## V: Build
+### V: Build
 
 Build the current module (directory).
 
-## V: Build File
+### V: Build File
 
 Build the current file.
 
-## V: Format File
+### V: Format File
 
 Format the current file.
 
-## V: Format Module
+### V: Format Module
 
 Format the current module.
 
-## V: Format Project
+### V: Format Project
 
 Format the current project.
 
-## V: Run
+### V: Run
 
 Execute `v run` on the current module (directory).
 
-## V: Run Test
+### V: Run Test
 
 Execute `v run` only on the current file.
 
-## V: Test
+### V: Test
 
 Execute `v test` only on the current module (directory).
 
-## V: Test File
+### V: Test File
 
 Execute `v test` only on the current file.
 
-## V: Update
+### V: Update
 
 Update V to the latest version (`v up`).
 
-# Custom Commands
-
-## v
+## Custom Commands
 
 ```json
 {
@@ -81,7 +94,7 @@ for full list, but some common ones are:
 - `${file_path}` for the directory the current file exists in (the module).
 - `${folder}` for the project directory.
 
-# Contributing
+## Contributing
 
 Note: Make sure you uninstall the package if it's already installed with
 "Package Control > Remove Package..."
