@@ -21,18 +21,25 @@ def setup_output(window):
 
 	return run_output
 
-class ShowErrors(sublime_plugin.ViewEventListener):
-	def on_post_save(self):
-		# TODO(elliotchance): Get the module for the file that was just changed.
-		#  If we check the whole module any new errors that arise in other files
-		#  can be raised as well.
-		file_path = self.view.file_name()
+class ShowErrors(sublime_plugin.EventListener):
+	def on_activated(self, view):
+		self.refresh(view)
 
+	def on_post_save(self, view):
+		self.refresh(view)
+
+	def refresh(self, view):
 		# Only applies to v files.
+		file_path = view.file_name()
 		if not file_path.endswith('.v'):
 			return
 
-		command = "v -check -nocolor -message-limit -1 \"" + file_path + "\""
+		# We need to test the whole module, otherwise it might not know about
+		# entities in other files of the same module.
+		module = os.path.dirname(file_path)
+
+		# "-shared" prevents it from complaining if this is not a main module.
+		command = "v -check -nocolor -shared -message-limit -1 \"" + module + "\""
 		proc = subprocess.Popen(
 			[os.environ['SHELL'], '-c', command],
 			shell=False,
@@ -59,7 +66,7 @@ class ShowErrors(sublime_plugin.ViewEventListener):
 			if matches is None:
 				continue
 
-			offset = self.view.text_point(int(matches.group(1))-1, 0) + int(matches.group(2)) - 1
+			offset = view.text_point(int(matches.group(1))-1, 0) + int(matches.group(2)) - 1
 
 			# The error message may give us a token which we can use to
 			# determine the length. We *could* use the "~~~" that appears later
@@ -67,7 +74,7 @@ class ShowErrors(sublime_plugin.ViewEventListener):
 			# the token or goto the end of the line.
 			symbol = re.search(r"`(.*?)`", line)
 			if symbol is None:
-				end = self.view.text_point(int(matches.group(1)), 0)-1
+				end = view.text_point(int(matches.group(1)), 0)-1
 			else:
 				end = offset + len(symbol.group(1))
 			
@@ -81,11 +88,11 @@ class ShowErrors(sublime_plugin.ViewEventListener):
 				error_regions.append(region)
 				error_annotations.append(msg)
 
-		self.view.add_regions("v_errors", error_regions, "region.redish", "dot",
+		view.add_regions("v_errors", error_regions, "region.redish", "dot",
 			sublime.DRAW_NO_FILL | sublime.DRAW_NO_OUTLINE | sublime.DRAW_SQUIGGLY_UNDERLINE,
 			error_annotations)
 
-		self.view.add_regions("v_warnings", warning_regions, "region.yellowish", "dot",
+		view.add_regions("v_warnings", warning_regions, "region.yellowish", "dot",
 			sublime.DRAW_NO_FILL | sublime.DRAW_NO_OUTLINE | sublime.DRAW_SQUIGGLY_UNDERLINE,
 			warning_annotations, 'yellow')
 
