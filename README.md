@@ -12,6 +12,9 @@ You can install the [V](https://packagecontrol.io/packages/V) package with
 
 ![Package Control: Install Package](img/install-v.png)
 
+For code completion you can
+[install vlang/vls for Sublime Text 3 or 4](https://github.com/vlang/vls#sublime-text-3-and-4).
+
 ## Features
 
 Commands for building, running, testing, formatting and updating V itself:
@@ -20,7 +23,11 @@ Commands for building, running, testing, formatting and updating V itself:
 
 Inline errors and warnings:
 
-![Command Palette](img/inline-errors.png)
+![Inline errors and warnings](img/inline-errors.png)
+
+Quickly goto to any symbol:
+
+![Goto any symbol](img/symbols.png)
 
 ## Command Palette
 
