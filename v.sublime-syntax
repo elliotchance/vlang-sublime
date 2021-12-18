@@ -1,0 +1,290 @@
+%YAML 1.2
+---
+name: V
+file_extensions:
+  - v
+scope: source.v
+
+variables:
+  ident: \b[A-Za-z_][A-Za-z_0-9]*\b
+  escape: \\([0-7]{3}|[\$abfnrtv\\'"]|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8})
+  unknown-escape: \\[^0-7\$xuUabfnrtv\'"]
+  
+contexts:
+  main:
+    # Most simple entities.
+    - include: enum-value
+    - include: comment-single-line
+    - include: comment-multi-line
+    - include: string-double
+    - include: string-single
+    - include: string-character
+    - include: numbers
+    - include: operator
+    - include: attributes
+    - include: punctuation
+    
+    # More complex constructs.
+    - include: as-is
+    - include: variable-definition
+    - include: method
+    - include: fn
+    - include: interface
+    - include: struct
+    - include: type
+    - include: compile-time
+    - include: enum
+    - include: flag
+    - include: import
+    - include: include
+    
+    # keywords needs to be a last resort as some of the specific keywords above
+    # should try to match first.
+    - include: keyword
+
+  punctuation:
+    - match: \.
+      scope: punctuation.delimiter.period.dot.v
+    - match: \,
+      scope: punctuation.delimiter.comma.v
+    - match: ':'
+      scope: punctuation.separator.key-value.colon.v
+    - match: \;
+      scope: punctuation.definition.other.semicolon.v
+    - match: \?
+      scope: punctuation.definition.other.questionmark.v
+
+  flag:
+    - match: ^\s*(#flag)\s+(.*?)$
+      captures:
+        0: meta.flag.v
+        1: keyword.flag.v
+        2: string.quoted.single.v
+    
+  include:
+    - match: ^\s*(#include)\s+(.*?)$
+      captures:
+        0: meta.include.v
+        1: keyword.include.v
+        2: string.quoted.double.v
+    
+  import:
+    - match: ^\s*(import)\s+(.*?)$
+      captures:
+        0: meta.import.v
+        1: keyword
+        2: entity.name.import.v
+
+  compile-time:
+    - match: (\$if|\$else|$for|\$embed_file|\$tmpl|\$env)
+      captures:
+        1: keyword.control.v
+    - match: (@FN|@METHOD|@MOD|@STRUCT|@FILE|@LINE|@COLUMN|@VEXE|@VEXEROOT|@VHASH|@VMOD_FILE|@VMODROOT)
+      captures:
+        1: variable.language.v
+    
+  attributes:
+    - match: ^\s*(\[(deprecated|unsafe_fn|typedef|live|inline|flag)\])
+      captures:
+        1: meta.definition.attribute.v
+
+  as-is:
+    - match: \b(as|is)\s*({{ident}})\b
+      captures:
+        1: keyword
+        2: meta.type.v
+    
+  numbers:
+    - match: (?:(?:[-]?)(?:[0-9e]*)(?:[.]){1}(?:[0-9]+))
+      scope: constant.numeric.float.decimal.v
+    - match: \b(?:0[xX])(?:[0-9a-fA-F]+)
+      scope: constant.numeric.hex.v
+    - match: \b(?:[-]?)(?:[0-9]+)
+      scope: constant.numeric.integer.decimal.v
+
+  comment-single-line:
+    - match: //
+      scope: punctuation.definition.comment.v
+      push:
+        - meta_scope: comment.line.v
+        - match: $\n?
+          pop: true
+          
+  comment-multi-line:
+    - match: /\*
+      scope: punctuation.definition.comment.begin.v
+      push:
+        - meta_scope: comment.block.v
+        - match: \*/
+          scope: punctuation.definition.comment.end.v
+          pop: true
+        - match: ^\s*(\*)(?!/)
+          captures:
+            1: punctuation.definition.comment.v
+            
+  variable-definition:
+    - match: '(mut)\s+({{ident}})\s*(:=)'
+      captures:
+        1: keyword
+        2: variable.other.readwrite
+        3: operator
+    - match: '({{ident}})\s*(:=)'
+      captures:
+        1: variable.other.constant
+        2: operator
+        
+  struct:
+    - match: \bstruct\b
+      captures:
+        0: keyword
+      push:
+        - match: '{{ident}}'
+          # TODO(elliotchance): I don't know why the more appropriate
+          #  \"entity.name.struct.v\" does not work here? Tested with ST4.
+          scope: entity.name.type.struct.v
+          pop: true
+          
+  interface:
+    - match: \binterface\b
+      captures:
+        0: keyword
+      push:
+        - match: '{{ident}}'
+          # TODO(elliotchance): I don't know why the more appropriate
+          #  \"entity.name.interface.v\" does not work here? Tested with ST4.
+          scope: entity.name.type.interface.v
+          pop: true
+          
+  enum:
+    - match: \benum\b
+      captures:
+        0: keyword
+      push:
+        - match: '{{ident}}'
+          scope: entity.name.enum.v
+          pop: true
+
+  enum-value:
+    - match: (\.{{ident}})
+      captures:
+        1: entity.name.constant.v
+          
+  type:
+    - match: \b(type)\b\s*({{ident}})
+      captures:
+        1: keyword
+        2: entity.name.type.v
+        
+  # We list all keywords even through some other rules may have specific
+  # handling if there is a syntax error we always want to highlight the keywords
+  # themselves.
+  #
+  # https://github.com/vlang/v/blob/master/doc/docs.md#appendix-i-keywords
+  # https://github.com/vlang/v/blob/master/doc/docs.md#v-types
+  keyword:
+    - match: \b(any|bool|byte|f32|f64|i128|i16|i64|i8|int|isize|rune|string|u128|u16|u32|u64|usize|voidptr|map)\b
+      scope: storage.type.v
+    - match: \b(true|false|none)\b
+      scope: constant.language
+    - match: \b(for|goto|go|lock|return|rlock|assert|break|continue|defer)\b
+      scope: keyword.control.v
+    - match: \b(if|else|or|select|match)\b
+      scope: keyword.control.conditional.v
+    - match: \bimport\b
+      scope: keyword.control.import.v
+    - match: \b(in|as|is|module)\b
+      scope: keyword.operator.word.v
+    - match: \bstruct\b
+      scope: keyword.declaration.struct.v
+    - match: \binterface\b
+      scope: keyword.declaration.interface.v
+    - match: \bfn\b
+      scope: keyword.declaration.function.v
+    - match: \b(mut|pub|shared|const|unsafe|volatile|static|atomic)\b
+      scope: storage.modifier.v
+    - match: \benum\b
+      scope: keyword.declaration.enum.v
+    - match: \btype\b
+      scope: keyword.declaration.type.v
+    - match: \bunion\b
+      scope: keyword.declaration.union.v
+    - match: \b(asm|embed|sizeof|typeof|__offsetof)\b
+      scope: keyword.other.v
+      
+  operator:
+    - match: '([+*/%-:&|^]|<<|>>>?)='
+      scope: keyword.operator.assignment
+    - match: '[+*/%-]'
+      scope: keyword.operator.arithmetic
+    - match: '!|&&|\|\|'
+      scope: keyword.operator.logical
+    - match: '[~&|^]|<<|>>>?'
+      scope: keyword.operator.bitwise
+      
+  method:
+    - match: (fn)\s*\((mut\s+)?{{ident}}\s+(({{ident}})\)\s*({{ident}}))
+      captures:
+        1: keyword
+        2: keyword
+        3: meta.indexed-unit.v
+        4: meta.type.v
+        5: entity.name.function.v
+      
+  fn:
+    - match: \bfn\b
+      captures:
+        0: keyword
+      push:
+        # Ignore inline functions (unnamed).
+        - match: \(
+          pop: true
+          
+        - match: '{{ident}}'
+          scope: entity.name.function.v
+          pop: true
+
+  string-interpolation:
+    - match: '\$\{'
+      scope: punctuation.definition.string.interpolated.element.begin.v
+      push:
+        - meta_scope: source.v.embedded
+        - match: '\}'
+          scope: punctuation.definition.string.interpolated.element.end.v
+          pop: true
+        - include: 'main'
+    - match: '\$'
+      scope: punctuation.definition.string.interpolated.element.begin.v
+      push:
+        - meta_scope: source.v.embedded
+        - match: '(\s|$)'
+          scope: punctuation.definition.string.interpolated.element.end.v
+          pop: true
+        - include: 'main'
+    - match: '{{escape}}'
+      scope: constant.character.escape.v
+    - match: '{{unknown-escape}}'
+      scope: invalid.illegal.unknown-escape.v
+          
+  string-single:
+    - match: "'"
+      push:
+        - meta_scope: string.interpolated.v
+        - include: string-interpolation
+        - match: "'"
+          pop: true
+          
+  string-double:
+    - match: '"'
+      push:
+        - meta_scope: string.interpolated.v
+        - include: string-interpolation
+        - match: '"'
+          pop: true
+          
+  string-character:
+    - match: '`'
+      push:
+        - meta_scope: string.interpolated.v
+        - include: string-interpolation
+        - match: '`'
+          pop: true
