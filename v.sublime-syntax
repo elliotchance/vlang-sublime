@@ -7,8 +7,6 @@ scope: source.v
 
 variables:
   ident: \b[A-Za-z_][A-Za-z_0-9]*\b
-  escape: \\([0-7]{3}|[\$abfnrtv\\'"]|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8})
-  unknown-escape: \\[^0-7\$xuUabfnrtv\'"]
   
 contexts:
   main:
@@ -252,19 +250,13 @@ contexts:
           scope: punctuation.definition.string.interpolated.element.end.v
           pop: true
         - include: 'main'
-    - match: '\$'
-      scope: punctuation.definition.string.interpolated.element.begin.v
-      push:
-        - meta_scope: source.v.embedded
-        - match: '(\s|$)'
-          scope: punctuation.definition.string.interpolated.element.end.v
-          pop: true
-        - include: 'main'
-    - match: '{{escape}}'
+    - match: '\$[A-Za-z_0-9.()]*'
+      scope: source.v.embedded
+    - match: \\([0-7]{3}|[\$abfnrtv\\'"]|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8})
       scope: constant.character.escape.v
-    - match: '{{unknown-escape}}'
+    - match: \\[^0-7\$xuUabfnrtv\'"]
       scope: invalid.illegal.unknown-escape.v
-          
+
   string-single:
     - match: "'"
       push:
