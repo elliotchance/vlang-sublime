@@ -1,0 +1,10 @@
+{
+  "shell_cmd": ["v", "-skip-unused", "-prod", "\"${file}\""],
+  "syntax": "Packages/V/V.sublime-syntax",
+  "selector": "source.v",
+  "file_patterns": ["*.v", "*.vv"],
+  "working_dir": "${project_path:${folder:${file_path}}}",
+  "windows": {
+    "cmd": ["v", "-skip-unused", "-prod", "\"${file}\""]
+  }
+}
