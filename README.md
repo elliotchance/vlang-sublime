@@ -29,6 +29,10 @@ Quickly goto to any symbol:
 
 ![Goto any symbol](img/symbols.png)
 
+Show assertion failures inline:
+
+![Assert failures](img/assert-failures.png)
+
 ## Command Palette
 
 Any commands that generate output will show in a new window called "V". You may
