@@ -3,6 +3,7 @@
 name: V
 file_extensions:
   - v
+  - vv
 scope: source.v
 
 variables:
@@ -183,7 +184,7 @@ contexts:
     - match: \b(any|bool|byte|f32|f64|i128|i16|i64|i8|int|isize|rune|string|u128|u16|u32|u64|usize|voidptr|map)\b
       scope: storage.type.v
     - match: \b(true|false|none)\b
-      scope: constant.language
+      scope: constant.v
     - match: \b(for|goto|go|lock|return|rlock|assert|break|continue|defer)\b
       scope: keyword.control.v
     - match: \b(if|else|or|select|match)\b
@@ -220,7 +221,7 @@ contexts:
       scope: keyword.operator.bitwise
       
   method:
-    - match: (fn)\s*\((mut\s+)?{{ident}}\s+(({{ident}})\)\s*({{ident}}))
+    - match: ((?:pub\s|)(fn))\s*\((mut\s+)?{{ident}}\s+(({{ident}})\)\s*({{ident}}))
       captures:
         1: keyword
         2: keyword
@@ -229,7 +230,7 @@ contexts:
         5: entity.name.function.v
       
   fn:
-    - match: \bfn\b
+    - match: \b((?:pub\s|)(fn))\b
       captures:
         0: keyword
       push:
