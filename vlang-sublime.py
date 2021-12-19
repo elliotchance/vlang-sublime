@@ -31,7 +31,7 @@ class ShowErrors(sublime_plugin.EventListener):
 	def refresh(self, view):
 		# Only applies to v files.
 		file_path = view.file_name()
-		if not file_path.endswith('.v'):
+		if file_path is None or not file_path.endswith('.v'):
 			return
 
 		# We need to test the whole module, otherwise it might not know about
@@ -63,7 +63,12 @@ class ShowErrors(sublime_plugin.EventListener):
 		warning_annotations = []
 		for line in full_output.split('\n'):
 			matches = re.search(r"(\d+):(\d+): (.*)", line)
-			if matches is None:
+
+			# TODO(elliotchance): We are only showing the errors/warnings for
+			#  this view, but we should also apply any output to other open
+			#  files to prevent needing to rerun the checker whenever a tab
+			#  changes.
+			if matches is None or file_path not in line:
 				continue
 
 			offset = view.text_point(int(matches.group(1))-1, 0) + int(matches.group(2)) - 1
@@ -146,12 +151,13 @@ class Runner(threading.Thread):
 			env=self.env
 		)
 
+		full_output = ''
 		while True:
 			out = proc.stdout.read(1)
 			if out == '' and proc.poll() != None:
 			 	break
-			if out != '' and self.output:
-			 	self.view.run_command('insert_view', { 'string': out })
+			if out != '':
+				full_output += out
 		
 		if self.output:
-			self.view.run_command('insert_view', { 'string': '\n' })
+			self.view.run_command('insert_view', { 'string': full_output + '\n' })
